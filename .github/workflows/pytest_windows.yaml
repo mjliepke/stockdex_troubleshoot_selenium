@@ -2,7 +2,7 @@ name: Manual pytest for windows
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   test:
     runs-on: windows-latest
@@ -23,4 +23,12 @@ jobs:
 
     - name: run pytest
       run: |
-        pytest
+        pytest --junitxml=pytest_report.xml
+
+    - name: generate test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Windows Tests
+        path: pytest_report.xml
+        reporter: jest-junit
