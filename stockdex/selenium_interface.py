@@ -18,18 +18,18 @@ class selenium_interface:
         self.chrome_options.add_argument("--headless")  # Ensure GUI is off
         self.chrome_options.add_argument("--no-sandbox")
         self.chrome_options.add_argument("--disable-dev-shm-usage")
-        if(platform.startswith("linux")): #pick driver based on os
-            self.chrome_options.binary_location = os.path.join(
-                os.getcwd(), "stockdex/chromedriver_linux64"
-            )
-        elif(platform == "darwin"):
-            self.chrome_options.binary_location = os.path.join(
-                os.getcwd(), "stockdex/chromedriver_mac64"
-            )
-        elif(platform == "win32"):
-            self.chrome_options.binary_location = os.path.join(
-                os.getcwd(), "stockdex/chromedriver_win32"
-            )
+        # if(platform.startswith("linux")): #pick driver based on os
+        #     self.chrome_options.binary_location = os.path.join(
+        #         os.getcwd(), "stockdex/chromedriver_linux64"
+        #     )
+        # elif(platform == "darwin"):
+        #     self.chrome_options.binary_location = os.path.join(
+        #         os.getcwd(), "stockdex/chromedriver_mac64"
+        #     )
+        # elif(platform == "win32"):
+        #     self.chrome_options.binary_location = os.path.join(
+        #         os.getcwd(), "stockdex/chromedriver_win32"
+        #     )
         self.chrome_options.add_argument("--disable-gpu")
         self.chrome_options.add_argument("--disable-extensions")
         self.chrome_options.add_argument("--start-maximized")
