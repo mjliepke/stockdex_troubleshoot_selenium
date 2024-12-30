@@ -21,6 +21,7 @@ class MacrotrendsInterface(TickerBase):
     Interface for interacting with the Macrotrends website.
     """
 
+    optional_query_modifiers = "" # to override macrotrend urls, such as '?freq=Q' to obtain quarterly data
     def __init__(
         self,
         ticker: str = "",
@@ -88,7 +89,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the income statement for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/income-statement"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/income-statement{self.optional_query_modifiers}"
 
         response = self.get_response(url)
 
@@ -111,7 +112,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the balance sheet for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/balance-sheet"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/balance-sheet{self.optional_query_modifiers}"
 
         # build selenium interface object if not already built
         if not hasattr(self, "selenium_interface"):
@@ -135,7 +136,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the cash flow statement for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/cash-flow-statement"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/cash-flow-statement{self.optional_query_modifiers}"
 
         # build selenium interface object if not already built
         if not hasattr(self, "selenium_interface"):
@@ -159,7 +160,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the key financial ratios for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/financial-ratios"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/financial-ratios{self.optional_query_modifiers}"
 
         # build selenium interface object if not already built
         if not hasattr(self, "selenium_interface"):
@@ -206,7 +207,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the operating margin for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/operating-margin"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/operating-margin{self.optional_query_modifiers}"
 
         return self._find_margins_table(url, "TTM Operating Income")
 
@@ -216,7 +217,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the gross margin for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/gross-margin"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/gross-margin{self.optional_query_modifiers}"
 
         return self._find_margins_table(url, "Gross Margin")
 
@@ -226,7 +227,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the EBITDA margin for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/ebitda-margin"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/ebitda-margin{self.optional_query_modifiers}"
 
         return self._find_margins_table(url, "TTM EBITDA")
 
@@ -236,7 +237,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the pre-tax margin for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/pre-tax-profit-margin"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/pre-tax-profit-margin{self.optional_query_modifiers}"
 
         return self._find_margins_table(url, "TTM Pre-Tax Income")
 
@@ -246,7 +247,7 @@ class MacrotrendsInterface(TickerBase):
         Retrieve the net profit margin for the given ticker.
         """
         check_security_type(self.security_type, valid_types=["stock"])
-        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/net-profit-margin"
+        url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/net-profit-margin{self.optional_query_modifiers}"
 
         return self._find_margins_table(url, "TTM Net Income")
 
