@@ -18,6 +18,7 @@ class TickerBase:
         "User-Agent": get_user_agent(),
     }
     logger = getLogger(__name__)
+    _cached_responses: dict[str, requests.Response]  = {}
 
     def get_response(self, url: str, n_retries: int=5) -> requests.Response:
         """
@@ -35,6 +36,8 @@ class TickerBase:
         requests.Response
             The response from the website
         """
+        if url in self._cached_responses.keys():
+            return self._cached_responses[url]
 
         # Send an HTTP GET request to the website
         session = requests.Session()
@@ -61,6 +64,8 @@ class TickerBase:
             if(n_retries > 1):
                 time.sleep(retry_after)
                 return self.get_response(url, n_retries-1)
+
+        self._cached_responses.update({str(response.url): response})
 
         return response
 
