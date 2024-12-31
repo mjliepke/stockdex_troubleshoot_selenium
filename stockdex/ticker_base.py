@@ -19,7 +19,7 @@ class TickerBase:
     }
     logger = getLogger(__name__)
 
-    def get_response(self, url: str) -> requests.Response:
+    def get_response(self, url: str, n_retries: int=5) -> requests.Response:
         """
         Send an HTTP GET request to the website
 
@@ -27,7 +27,8 @@ class TickerBase:
         ----------
         url: str
             The URL to send the HTTP GET request to
-
+        n_retries: int
+            Max number of retries allowed w/ rate limit warnings. Default is 5
 
         Returns:
         ----------
@@ -50,19 +51,16 @@ class TickerBase:
             )
 
         # sleep if rate limit is reached and retry after time is given
-        elif response.status_code == 429:
-            # retry 5 times with 10 seconds intervals and after that raise an exception
-            for _ in range(5):
-                retry_after = 10
-                self.logger.warning(
-                    f"Rate limit reached. Retrying after {retry_after} seconds"
-                )
+        # content search is due to macrotrends's way of telling you to wait
+        elif response.status_code == 429 or "<title>Just a moment...</title>" in str(response.content):
+            # retry n_retries times with 10 seconds intervals and after that raise an exception
+            retry_after = 10
+            self.logger.warning(
+                f"Rate limit reached. Retrying {n_retries-1} more times after {retry_after} seconds"
+            )
+            if(n_retries > 1):
                 time.sleep(retry_after)
-                response = session.get(
-                    url, headers=self.request_headers, timeout=RESPONSE_TIMEOUT
-                )
-                if response.status_code == 200:
-                    break
+                return self.get_response(url, n_retries-1)
 
         return response
 
