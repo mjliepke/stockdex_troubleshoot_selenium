@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 from stockdex.config import RESPONSE_TIMEOUT
 from stockdex.lib import get_user_agent
-
+from stockdex.exceptions import NoDataError
 
 class TickerBase:
     request_headers = {
@@ -46,7 +46,7 @@ class TickerBase:
         )
         # If the HTTP GET request can't be served
         if response.status_code != 200 and response.status_code != 429:
-            raise Exception(
+            raise NoDataError(
                 f"""
                 Failed to load page (status code: {response.status_code}).
                 Check if the ticker symbol exists

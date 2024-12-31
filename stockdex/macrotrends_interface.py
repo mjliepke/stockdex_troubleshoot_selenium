@@ -10,7 +10,7 @@ import plotly.express as px
 from bs4 import BeautifulSoup
 
 from stockdex.config import MACROTRENDS_BASE_URL, VALID_SECURITY_TYPES
-from stockdex.exceptions import FieldNotExists
+from stockdex.exceptions import FieldNotExists, NoDataError
 from stockdex.lib import check_security_type, plot_dataframe
 from stockdex.selenium_interface import selenium_interface
 from stockdex.ticker_base import TickerBase
@@ -100,6 +100,9 @@ class MacrotrendsInterface(TickerBase):
 
         data = self._find_table_in_url("Revenue", soup)
 
+        if 'field_name' not in data.keys():
+            raise NoDataError(f"Income Statmement blank for {self.ticker}")
+
         data["field_name"] = data["field_name"].apply(
             lambda x: re.search(">(.*)<", x).group(1)
         )
@@ -117,13 +120,17 @@ class MacrotrendsInterface(TickerBase):
         url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/balance-sheet"
         url = self._apply_optional_query_modifier(url)
 
-        # build selenium interface object if not already built
-        if not hasattr(self, "selenium_interface"):
-            self.selenium_interface = selenium_interface()
+        response = self.get_response(url)
 
-        soup = self.selenium_interface.get_html_content(url)
+        # Parse the HTML content of the website
+        soup = BeautifulSoup(response.content, "html.parser")
 
+        if(soup.markup is None):
+            pass #debug line
         data = self._find_table_in_url("Cash On Hand", soup)
+
+        if 'field_name' not in data.keys():
+            raise NoDataError(f"Income Statmement blank for {self.ticker}")
 
         data["field_name"] = data["field_name"].apply(
             lambda x: re.search(">(.*)<", x).group(1)
@@ -142,13 +149,15 @@ class MacrotrendsInterface(TickerBase):
         url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/cash-flow-statement"
         url = self._apply_optional_query_modifier(url)
 
-        # build selenium interface object if not already built
-        if not hasattr(self, "selenium_interface"):
-            self.selenium_interface = selenium_interface()
+        response = self.get_response(url)
 
-        soup = self.selenium_interface.get_html_content(url)
+        # Parse the HTML content of the website
+        soup = BeautifulSoup(response.content, "html.parser")
 
         data = self._find_table_in_url("Net Income/Loss", soup)
+
+        if 'field_name' not in data.keys():
+            raise NoDataError(f"Income Statmement blank for {self.ticker}")
 
         data["field_name"] = data["field_name"].apply(
             lambda x: re.search(">(.*)<", x).group(1)
@@ -167,13 +176,15 @@ class MacrotrendsInterface(TickerBase):
         url = f"{MACROTRENDS_BASE_URL}/{self.ticker}/TBD/financial-ratios"
         url = self._apply_optional_query_modifier(url)
 
-        # build selenium interface object if not already built
-        if not hasattr(self, "selenium_interface"):
-            self.selenium_interface = selenium_interface()
+        response = self.get_response(url)
 
-        soup = self.selenium_interface.get_html_content(url)
+        # Parse the HTML content of the website
+        soup = BeautifulSoup(response.content, "html.parser")
 
         data = self._find_table_in_url("Current Ratio", soup)
+
+        if 'field_name' not in data.keys():
+            raise NoDataError(f"Income Statmement blank for {self.ticker}")
 
         data["field_name"] = data["field_name"].apply(
             lambda x: re.search(">(.*)<", x).group(1)
