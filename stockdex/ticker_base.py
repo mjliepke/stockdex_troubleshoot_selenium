@@ -7,6 +7,7 @@ from logging import getLogger
 from typing import Union
 
 import requests
+from requests.adapters import HTTPAdapter, Retry
 from bs4 import BeautifulSoup
 
 from stockdex.config import RESPONSE_TIMEOUT
@@ -41,6 +42,10 @@ class TickerBase:
 
         # Send an HTTP GET request to the website
         session = requests.Session()
+        retry = Retry(connect=5, backoff_factor=1)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
         response = session.get(
             url, headers=self.request_headers, timeout=RESPONSE_TIMEOUT
         )
@@ -56,8 +61,9 @@ class TickerBase:
         # sleep if rate limit is reached and retry after time is given
         # content search is due to macrotrends's way of telling you to wait
         elif response.status_code == 429 or "<title>Just a moment...</title>" in str(response.content):
-            # retry n_retries times with 10 seconds intervals and after that raise an exception
-            retry_after = 10
+            # retry n_retries times with 10 seconds intervals and after that raise an exception.
+            # since we also use retry in the session, make this one long
+            retry_after = 20
             self.logger.warning(
                 f"Rate limit reached. Retrying {n_retries-1} more times after {retry_after} seconds"
             )
