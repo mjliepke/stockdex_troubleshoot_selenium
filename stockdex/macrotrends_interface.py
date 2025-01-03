@@ -125,9 +125,7 @@ class MacrotrendsInterface(TickerBase):
         # Parse the HTML content of the website
         soup = BeautifulSoup(response.content, "html.parser")
 
-        if(soup.markup is None):
-            pass #debug line
-        data = self._find_table_in_url("Cash On Hand", soup)
+        data = self._find_table_in_url("Balance Sheet", soup)
 
         if 'field_name' not in data.keys():
             raise NoDataError(f"Income Statmement blank for {self.ticker}")
@@ -154,7 +152,7 @@ class MacrotrendsInterface(TickerBase):
         # Parse the HTML content of the website
         soup = BeautifulSoup(response.content, "html.parser")
 
-        data = self._find_table_in_url("Net Income/Loss", soup)
+        data = self._find_table_in_url("Cash Flow Statement", soup)
 
         if 'field_name' not in data.keys():
             raise NoDataError(f"Income Statmement blank for {self.ticker}")
@@ -181,7 +179,7 @@ class MacrotrendsInterface(TickerBase):
         # Parse the HTML content of the website
         soup = BeautifulSoup(response.content, "html.parser")
 
-        data = self._find_table_in_url("Current Ratio", soup)
+        data = self._find_table_in_url("Key Financial Ratios", soup)
 
         if 'field_name' not in data.keys():
             raise NoDataError(f"Income Statmement blank for {self.ticker}")
