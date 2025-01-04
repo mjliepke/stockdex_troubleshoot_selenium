@@ -39,8 +39,7 @@ class TickerBase:
 
         # Send an HTTP GET request to the website
         session = requests.Session()
-        retry = Retry(connect=5, backoff_factor=1)
-        adapter = HTTPAdapter(max_retries=retry)
+        adapter = HTTPAdapter()
         session.mount('http://', adapter)
         session.mount('https://', adapter)
         response = session.get(
@@ -60,7 +59,7 @@ class TickerBase:
         elif response.status_code == 429 or "<title>Just a moment...</title>" in str(response.content):
             # retry n_retries times with 10 seconds intervals and after that raise an exception.
             # since we also use retry in the session, make this one long
-            retry_after = 6
+            retry_after = 10
             self.logger.warning(
                 f"Rate limit reached. Retrying {n_retries-1} more times after {retry_after} seconds"
             )

@@ -8,6 +8,7 @@ from typing import Literal, Union
 import pandas as pd
 import plotly.express as px
 from bs4 import BeautifulSoup
+from time import sleep
 
 from stockdex.config import MACROTRENDS_BASE_URL, VALID_SECURITY_TYPES
 from stockdex.exceptions import FieldNotExists, NoDataError
@@ -21,7 +22,8 @@ class MacrotrendsInterface(TickerBase):
     Interface for interacting with the Macrotrends website.
     """
 
-    optional_query_modifier:str = None # optionalquery modifier. eg. "?freq=Q" for quarterly data. TODO: add pytests
+    macrotrends_optional_query_modifier:str = None # optionalquery modifier. eg. "?freq=Q" for quarterly data. TODO: add pytests
+    macrotrends_optional_query_modifier_wait = 0 #sec. post-query mod request do we want to wait to prevent timeouts
 
     def __init__(
         self,
@@ -62,6 +64,9 @@ class MacrotrendsInterface(TickerBase):
             The table as a pandas DataFrame.
         """
         table = self.find_parent_by_text(soup=soup, tag="div", text=text_to_look_for)
+
+        if table is None:
+            raise NoDataError(f"Table {text_to_look_for} not found for {self.ticker}")
 
         data = []
         # get var originalData from the table
@@ -437,8 +442,9 @@ class MacrotrendsInterface(TickerBase):
         str
             The URL with the modifiers applied.
         """
-        if self.optional_query_modifier is not None:
+        if self.macrotrends_optional_query_modifier is not None:
             response = self.get_response(url)
-            return response.url + self.optional_query_modifier
+            sleep(self.macrotrends_optional_query_modifier_wait)
+            return response.url + self.macrotrends_optional_query_modifier
         else:
             return url
