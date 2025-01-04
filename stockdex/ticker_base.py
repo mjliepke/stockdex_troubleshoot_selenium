@@ -19,7 +19,6 @@ class TickerBase:
         "User-Agent": get_user_agent(),
     }
     logger = getLogger(__name__)
-    _cached_responses: dict[str, requests.Response]  = {}
 
     def get_response(self, url: str, n_retries: int=5) -> requests.Response:
         """
@@ -37,8 +36,6 @@ class TickerBase:
         requests.Response
             The response from the website
         """
-        if url in self._cached_responses.keys():
-            return self._cached_responses[url]
 
         # Send an HTTP GET request to the website
         session = requests.Session()
@@ -63,15 +60,13 @@ class TickerBase:
         elif response.status_code == 429 or "<title>Just a moment...</title>" in str(response.content):
             # retry n_retries times with 10 seconds intervals and after that raise an exception.
             # since we also use retry in the session, make this one long
-            retry_after = 20
+            retry_after = 6
             self.logger.warning(
                 f"Rate limit reached. Retrying {n_retries-1} more times after {retry_after} seconds"
             )
             if(n_retries > 1):
                 time.sleep(retry_after)
                 return self.get_response(url, n_retries-1)
-
-        self._cached_responses.update({str(response.url): response})
 
         return response
 
